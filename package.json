@@ -1,5 +1,5 @@
 {
-  "name": "phantom-clone",
+  "name": "algeria-travel",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "gsap": "^3.12.5",
     "three": "^0.166.0"
   },
   "devDependencies": {

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PHANTOM — Technology Creative (Clone)</title>
+    <title>Algérie — A Journey Through Cities</title>
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
@@ -11,43 +11,63 @@
 
     <header class="ui top">
       <a class="logo" href="#" aria-label="Home">
-        <svg viewBox="0 0 32 40" width="26" height="32" fill="currentColor">
-          <path d="M16 0C7.2 0 0 7.2 0 16v24l5.3-4 5.4 4 5.3-4 5.3 4 5.4-4 5.3 4V16C32 7.2 24.8 0 16 0zm-6 20a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7zm12 0a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/>
-        </svg>
+        <span class="flag" aria-hidden="true">🇩🇿</span>
+        <span class="logo-text">ALGÉRIE</span>
       </a>
-      <div class="sound mono">SOUND [OFF]</div>
       <div class="blurb mono">
-        A TECHNOLOGY-DRIVEN CREATIVE STUDIO BUILDING DIGITAL EXPERIENCES FOR GLOBAL BRANDS.
+        DISCOVER ALGERIA — TWELVE CITIES, TWELVE LANDMARKS, ONE EXTRAORDINARY COUNTRY.
       </div>
       <div class="clocks mono">
-        <div>LONDON, UK <span id="clock-ldn"></span> GMT+1</div>
-        <div>AUCKLAND, NZ <span id="clock-akl"></span> GMT+12</div>
+        <div>ALGIERS <span id="clock-alg"></span> GMT+1</div>
       </div>
-      <a class="cta" href="#">Let's Talk</a>
+      <a class="cta" href="#paper-root">Explore</a>
     </header>
 
     <footer class="ui bottom">
-      <div class="view-toggle">
-        <button class="icon-btn active" aria-label="Grid view">
-          <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
-            <rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/>
-            <rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/>
-          </svg>
-        </button>
-        <button class="icon-btn" aria-label="List view">
-          <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
-            <rect x="1" y="2" width="14" height="2" rx="1"/><rect x="1" y="7" width="14" height="2" rx="1"/>
-            <rect x="1" y="12" width="14" height="2" rx="1"/>
-          </svg>
-        </button>
-      </div>
       <nav class="tabs">
-        <button class="tab active">Work</button>
+        <button class="tab active">Cities</button>
+        <button class="tab">Regions</button>
         <button class="tab">About</button>
-        <button class="tab">Careers</button>
       </nav>
-      <div class="hint mono">DRAG TO EXPLORE</div>
+      <div class="hint mono">DRAG TO EXPLORE · CLICK TO UNFOLD</div>
     </footer>
+
+    <div id="paper-root" class="paper-root" aria-hidden="true">
+      <div class="paper-backdrop"></div>
+      <div class="paper-stage">
+        <article class="paper-sheet">
+          <div class="paper-fold paper-fold-top"></div>
+          <div class="paper-body">
+            <button class="paper-close" aria-label="Close">✕</button>
+            <header class="paper-header">
+              <div class="paper-header-text">
+                <h1 class="paper-city"></h1>
+                <h2 class="paper-landmark"></h2>
+              </div>
+              <p class="paper-arabic"></p>
+            </header>
+
+            <div class="paper-hero">
+              <div class="paper-map-wrap"></div>
+              <div class="paper-art" aria-hidden="true"></div>
+            </div>
+
+            <p class="paper-desc"></p>
+
+            <section class="paper-highlights">
+              <h3 class="paper-section-title mono">Places & Highlights</h3>
+              <ul class="paper-list"></ul>
+            </section>
+
+            <footer class="paper-footer">
+              <div class="paper-tags"></div>
+              <span class="paper-region mono"></span>
+            </footer>
+          </div>
+          <div class="paper-fold paper-fold-bottom"></div>
+        </article>
+      </div>
+    </div>
 
     <script type="module" src="/src/main.js"></script>
   </body>

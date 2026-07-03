@@ -1,11 +1,7 @@
 import * as THREE from "three";
+import { CITIES } from "./cities.js";
 import { buildCardCanvases, CARD_ASPECT } from "./cards.js";
-
-// ---------------------------------------------------------------------------
-// An homage to the phantom.land homepage: an infinite, draggable grid of
-// project cards projected onto a gently curved (dome-like) surface.
-// All artwork is generated procedurally in cards.js.
-// ---------------------------------------------------------------------------
+import { PaperReveal } from "./paper.js";
 
 const canvas = document.getElementById("scene");
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -16,25 +12,23 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
 camera.position.z = 10;
 
-// --- grid layout ------------------------------------------------------------
+const paper = new PaperReveal();
 
 const CARD_H = 3.0;
 const CARD_W = CARD_H * CARD_ASPECT;
 const GAP = 0.35;
 const CELL_X = CARD_W + GAP;
 const CELL_Y = CARD_H + GAP;
-const COLS = 5; // virtual columns before wrapping
-const ROWS = 4; // virtual rows before wrapping
+const COLS = 4;
+const ROWS = 3;
 const WRAP_W = COLS * CELL_X;
 const WRAP_H = ROWS * CELL_Y;
 
-// Concave curvature: camera inside a sphere. Uses a true spherical cap so the
-// wall forms a pronounced U — centre sits deepest, edges bow toward the viewer.
 const vertexShader = /* glsl */ `
-  uniform float uRadius;    // sphere radius (smaller = tighter U)
-  uniform float uCurve;     // depth multiplier
-  uniform float uPinch;     // horizontal wrap strength
-  uniform float uScale;     // hover scale
+  uniform float uRadius;
+  uniform float uCurve;
+  uniform float uPinch;
+  uniform float uScale;
   varying vec2 vUv;
   varying float vFade;
 
@@ -44,10 +38,8 @@ const vertexShader = /* glsl */ `
 
     float d2 = dot(wp.xy, wp.xy);
     float R = uRadius;
-    // inner-sphere cap: smooth U-bow from centre (flat) to edges (forward)
     float zBow = R - sqrt(max(R * R - d2, 0.0001));
     wp.z += zBow * uCurve;
-    // pinch xy as we climb the sphere wall
     wp.xy *= 1.0 - (zBow / R) * uPinch;
 
     vFade = smoothstep(38.0, 2.5, d2);
@@ -63,14 +55,15 @@ const fragmentShader = /* glsl */ `
 
   void main() {
     vec3 tex = texture2D(uMap, vUv).rgb;
-    tex *= 0.72 + 0.28 * vFade;      // vignette toward edges of the dome
-    tex *= 1.0 + uHover * 0.18;      // brighten on hover
+    tex *= 0.72 + 0.28 * vFade;
+    tex *= 1.0 + uHover * 0.22;
     gl_FragColor = vec4(tex, 1.0);
   }
 `;
 
 const geometry = new THREE.PlaneGeometry(CARD_W, CARD_H, 24, 24);
-const textures = buildCardCanvases().map((c) => {
+const cardCanvases = buildCardCanvases();
+const textures = cardCanvases.map((c) => {
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
   t.anisotropy = renderer.capabilities.getMaxAnisotropy();
@@ -78,14 +71,14 @@ const textures = buildCardCanvases().map((c) => {
 });
 
 const cards = [];
-let idx = 0;
 for (let col = 0; col < COLS; col++) {
   for (let row = 0; row < ROWS; row++) {
+    const cityIdx = (col * ROWS + row) % CITIES.length;
     const material = new THREE.ShaderMaterial({
       vertexShader,
       fragmentShader,
       uniforms: {
-        uMap: { value: textures[idx % textures.length] },
+        uMap: { value: textures[cityIdx] },
         uRadius: { value: 9.5 },
         uCurve: { value: 1.35 },
         uPinch: { value: 0.42 },
@@ -94,23 +87,24 @@ for (let col = 0; col < COLS; col++) {
       },
     });
     const mesh = new THREE.Mesh(geometry, material);
-    // brick-like offset: stagger every other column vertically
     const baseX = col * CELL_X;
     const baseY = row * CELL_Y + (col % 2 ? CELL_Y * 0.5 : 0);
-    mesh.userData = { baseX, baseY, hover: 0 };
+    mesh.userData = { baseX, baseY, hover: 0, city: CITIES[cityIdx] };
     scene.add(mesh);
     cards.push(mesh);
-    idx++;
   }
 }
 
-// --- drag / inertia ----------------------------------------------------------
+// --- drag / click -----------------------------------------------------------
 
 const offset = new THREE.Vector2(0, 0);
 const velocity = new THREE.Vector2(0, 0);
 let dragging = false;
+let pointerDown = false;
+const pointerStart = new THREE.Vector2();
 const last = new THREE.Vector2();
 let pxToWorld = 0.01;
+const CLICK_THRESHOLD = 8;
 
 function updatePxToWorld() {
   const vFov = (camera.fov * Math.PI) / 180;
@@ -119,8 +113,11 @@ function updatePxToWorld() {
 }
 
 canvas.addEventListener("pointerdown", (e) => {
+  if (paper.isOpen()) return;
+  pointerDown = true;
   dragging = true;
   canvas.classList.add("dragging");
+  pointerStart.set(e.clientX, e.clientY);
   last.set(e.clientX, e.clientY);
   velocity.set(0, 0);
   canvas.setPointerCapture(e.pointerId);
@@ -140,16 +137,29 @@ canvas.addEventListener("pointermove", (e) => {
   last.set(e.clientX, e.clientY);
 });
 
-function endDrag() {
+function endPointer(e) {
+  const moved = Math.hypot(e.clientX - pointerStart.x, e.clientY - pointerStart.y);
+
+  if (pointerDown && moved < CLICK_THRESHOLD && !paper.isOpen()) {
+    raycaster.setFromCamera(mouse, camera);
+    const hit = raycaster.intersectObjects(cards)[0];
+    if (hit?.object?.userData?.city) {
+      paper.show(hit.object.userData.city);
+    }
+  }
+
+  pointerDown = false;
   dragging = false;
   canvas.classList.remove("dragging");
 }
-canvas.addEventListener("pointerup", endDrag);
-canvas.addEventListener("pointercancel", endDrag);
+
+canvas.addEventListener("pointerup", endPointer);
+canvas.addEventListener("pointercancel", endPointer);
 
 canvas.addEventListener(
   "wheel",
   (e) => {
+    if (paper.isOpen()) return;
     e.preventDefault();
     offset.x -= e.deltaX * pxToWorld;
     offset.y += e.deltaY * pxToWorld;
@@ -157,12 +167,8 @@ canvas.addEventListener(
   { passive: false }
 );
 
-// --- hover picking -----------------------------------------------------------
-
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2(-10, -10);
-
-// --- resize ------------------------------------------------------------------
 
 function resize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -173,53 +179,46 @@ function resize() {
 window.addEventListener("resize", resize);
 resize();
 
-// --- clocks in the header ------------------------------------------------------
-
-function tickClocks() {
-  const fmt = (tz) =>
-    new Intl.DateTimeFormat("en-GB", {
-      hour: "2-digit",
-      minute: "2-digit",
-      timeZone: tz,
-    }).format(new Date());
-  const ldn = document.getElementById("clock-ldn");
-  const akl = document.getElementById("clock-akl");
-  if (ldn) ldn.textContent = fmt("Europe/London");
-  if (akl) akl.textContent = fmt("Pacific/Auckland");
+function tickClock() {
+  const el = document.getElementById("clock-alg");
+  if (!el) return;
+  el.textContent = new Intl.DateTimeFormat("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Africa/Algiers",
+  }).format(new Date());
 }
-tickClocks();
-setInterval(tickClocks, 30000);
-
-// --- render loop ---------------------------------------------------------------
+tickClock();
+setInterval(tickClock, 30000);
 
 const wrap = (v, range) => ((((v + range / 2) % range) + range) % range) - range / 2;
 
 function render() {
   requestAnimationFrame(render);
 
-  if (!dragging) {
+  const frozen = paper.isOpen();
+
+  if (!dragging && !frozen) {
     offset.add(velocity);
     velocity.multiplyScalar(0.94);
-    // slow ambient drift so the wall never feels frozen
-    offset.x += 0.0016;
-    offset.y += 0.0007;
+    offset.x += 0.0012;
+    offset.y += 0.0005;
   }
 
   raycaster.setFromCamera(mouse, camera);
-  const hit = raycaster.intersectObjects(cards)[0]?.object ?? null;
+  const hit = !frozen && !dragging ? raycaster.intersectObjects(cards)[0]?.object ?? null : null;
 
   for (const card of cards) {
     const { baseX, baseY } = card.userData;
-    const x = wrap(baseX + offset.x, WRAP_W);
-    const y = wrap(baseY + offset.y, WRAP_H);
-    card.position.set(x, y, 0);
+    card.position.set(wrap(baseX + offset.x, WRAP_W), wrap(baseY + offset.y, WRAP_H), 0);
 
-    const target = card === hit && !dragging ? 1 : 0;
+    const target = card === hit ? 1 : 0;
     card.userData.hover += (target - card.userData.hover) * 0.12;
     card.material.uniforms.uHover.value = card.userData.hover;
-    card.material.uniforms.uScale.value = 1 + card.userData.hover * 0.04;
+    card.material.uniforms.uScale.value = 1 + card.userData.hover * 0.05;
   }
 
+  canvas.style.cursor = frozen ? "default" : hit ? "pointer" : dragging ? "grabbing" : "grab";
   renderer.render(scene, camera);
 }
 render();

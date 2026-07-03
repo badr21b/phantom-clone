@@ -1,24 +1,18 @@
-# Phantom-style WebGL Grid
+# Algérie — A Journey Through Cities
 
-A Three.js homage to the phantom.land homepage: an infinite, draggable wall
-of project cards projected onto a curved, dome-like surface.
+An immersive Three.js + GSAP travel experience through Algeria. Explore twelve cities on a curved, draggable WebGL wall — click any card to unfold a paper-style reveal with landmark details.
 
-All card artwork and project names are original, procedurally generated
-placeholders drawn to a canvas at runtime (`src/cards.js`) — no assets are
-copied from the original site.
+## Cities
 
-## How it works
+Algiers · Constantine · Oran · Ghardaïa · Tipaza · Tamanrasset · Djanet · Tlemcen · Béjaïa · Batna · Timimoun · Annaba
 
-- `src/cards.js` draws each project card (client, title, artwork, tag pills,
-  year) onto an offscreen canvas that becomes a `CanvasTexture`.
-- `src/main.js` lays the cards out in a staggered grid and wraps their
-  positions modulo the grid size, so dragging in any direction loops forever.
-- A custom vertex shader recesses vertices into the screen and pinches them
-  inward based on their squared distance from the viewport centre, producing
-  the fisheye/dome look. The fragment shader adds an edge vignette and a
-  hover brighten.
-- Pointer drag (with inertia), wheel/trackpad pan, hover picking via
-  raycaster, plus a slow ambient drift.
+Each card highlights the city's most famous landmark with procedurally drawn artwork.
+
+## Stack
+
+- **Three.js** — curved infinite grid, custom vertex shader (inner-sphere U-curve)
+- **GSAP** — paper unfold/fold reveal animation on click
+- **Canvas 2D** — runtime card textures (no external image assets)
 
 ## Run
 
@@ -27,4 +21,4 @@ npm install
 npm run dev
 ```
 
-Then open the printed localhost URL. Drag or scroll to explore.
+Drag to explore the wall. Click a city card to unfold its travel note.
