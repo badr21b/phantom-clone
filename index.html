@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PHANTOM — Technology Creative (Clone)</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <canvas id="scene"></canvas>
+
+    <header class="ui top">
+      <a class="logo" href="#" aria-label="Home">
+        <svg viewBox="0 0 32 40" width="26" height="32" fill="currentColor">
+          <path d="M16 0C7.2 0 0 7.2 0 16v24l5.3-4 5.4 4 5.3-4 5.3 4 5.4-4 5.3 4V16C32 7.2 24.8 0 16 0zm-6 20a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7zm12 0a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/>
+        </svg>
+      </a>
+      <div class="sound mono">SOUND [OFF]</div>
+      <div class="blurb mono">
+        A TECHNOLOGY-DRIVEN CREATIVE STUDIO BUILDING DIGITAL EXPERIENCES FOR GLOBAL BRANDS.
+      </div>
+      <div class="clocks mono">
+        <div>LONDON, UK <span id="clock-ldn"></span> GMT+1</div>
+        <div>AUCKLAND, NZ <span id="clock-akl"></span> GMT+12</div>
+      </div>
+      <a class="cta" href="#">Let's Talk</a>
+    </header>
+
+    <footer class="ui bottom">
+      <div class="view-toggle">
+        <button class="icon-btn active" aria-label="Grid view">
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
+            <rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/>
+            <rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/>
+          </svg>
+        </button>
+        <button class="icon-btn" aria-label="List view">
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
+            <rect x="1" y="2" width="14" height="2" rx="1"/><rect x="1" y="7" width="14" height="2" rx="1"/>
+            <rect x="1" y="12" width="14" height="2" rx="1"/>
+          </svg>
+        </button>
+      </div>
+      <nav class="tabs">
+        <button class="tab active">Work</button>
+        <button class="tab">About</button>
+        <button class="tab">Careers</button>
+      </nav>
+      <div class="hint mono">DRAG TO EXPLORE</div>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

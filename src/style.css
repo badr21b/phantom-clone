@@ -1,0 +1,170 @@
+@font-face {
+  font-family: "Mono";
+  src: local("SF Mono"), local("Menlo"), local("Consolas");
+}
+
+:root {
+  --bg: #0a0a0a;
+  --fg: #f2f2ef;
+  --muted: #8a8a85;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#scene {
+  position: fixed;
+  inset: 0;
+  display: block;
+  cursor: grab;
+}
+
+#scene.dragging {
+  cursor: grabbing;
+}
+
+.mono {
+  font-family: "SF Mono", "Menlo", "Consolas", monospace;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.ui {
+  position: fixed;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 20px 24px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.ui a,
+.ui button {
+  pointer-events: auto;
+}
+
+.top {
+  top: 0;
+}
+
+.bottom {
+  bottom: 0;
+}
+
+.logo {
+  color: var(--fg);
+  display: inline-flex;
+}
+
+.sound {
+  color: var(--muted);
+  margin-left: auto;
+}
+
+.blurb {
+  max-width: 240px;
+  margin-left: auto;
+}
+
+.clocks {
+  color: var(--muted);
+  text-align: left;
+}
+
+.cta {
+  background: var(--fg);
+  color: #111;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 12px 22px;
+  border-radius: 999px;
+  transition: transform 0.25s ease;
+}
+
+.cta:hover {
+  transform: scale(1.06);
+}
+
+.view-toggle {
+  display: flex;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  padding: 4px;
+  pointer-events: auto;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--fg);
+  cursor: pointer;
+}
+
+.icon-btn.active {
+  background: var(--fg);
+  color: #111;
+}
+
+.tabs {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  border-radius: 999px;
+  padding: 4px;
+  pointer-events: auto;
+}
+
+.tab {
+  border: 0;
+  background: transparent;
+  color: var(--fg);
+  font-size: 13px;
+  padding: 9px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.tab.active {
+  background: var(--fg);
+  color: #111;
+}
+
+.tab:not(.active):hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.hint {
+  margin-left: auto;
+  color: var(--muted);
+}
